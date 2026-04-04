@@ -1,4 +1,4 @@
-package db
+package database
 
 import (
 	"database/sql"
@@ -8,8 +8,13 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+var initQueries []string = []string{
+	"CREATE TABLE IF NOT EXISTS logfile (name TEXT, filename TEXT);",
+	`CREATE TABLE IF NOT EXISTS "logfile-main" (name TEXT, filename TEXT);`,
+}
+
 func OpenDB() (*sql.DB, error) {
-	dbPath, err := GetDBPath()
+	dbPath, err := getDBPath()
 	if err != nil {
 		return nil, err
 	}
@@ -19,10 +24,17 @@ func OpenDB() (*sql.DB, error) {
 		return nil, err
 	}
 
+	for _, query := range initQueries {
+		_, err = db.Exec(query)
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	return db, nil
 }
 
-func GetDBPath() (string, error) {
+func getDBPath() (string, error) {
 	homeDir, err := util.GetHomeDirPath()
 	if err != nil {
 		return "", err

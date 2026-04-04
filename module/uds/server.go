@@ -39,13 +39,13 @@ func Listen() (*UDSServer, error) {
 	return server, nil
 }
 
-func (this *UDSServer) Broadcast(message string) {
+func (this *UDSServer) Broadcast(JSON []byte) {
 	this.mutex.Lock()
 	defer this.mutex.Unlock()
 
 	for _, conn := range this.clients {
 		go func() {
-			conn.Write([]byte(message + "\n"))
+			conn.Write(append(JSON, '\n'))
 		}()
 	}
 }

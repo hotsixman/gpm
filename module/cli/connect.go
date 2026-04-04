@@ -10,7 +10,7 @@ import (
 
 var connectCmd = &cobra.Command{
 	Use:   "connect",
-	Short: "Start the GPM daemon process",
+	Short: "Connect to GPM daemon process",
 	Run: func(cmd *cobra.Command, args []string) {
 		_, err := uds.Connect()
 		if err != nil {

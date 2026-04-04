@@ -1,20 +1,40 @@
 package logger
 
 import (
+	"encoding/json"
 	"fmt"
-	"gpm/module/uds"
 	"gpm/module/util"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
+	"time"
 )
+
+func Logln(v ...any) {
+	message := strings.TrimRight(fmt.Sprintln(v...), " \t\n\r")
+	timeString := "[" + time.Now().Format("2006-01-02 15:04:05") + "]"
+	header := "\033[32m" + timeString + " [LOG]" + "\033[0m"
+	fmt.Println(header, message)
+}
+
+func Errorln(v ...any) {
+	message := strings.TrimRight(fmt.Sprintln(v...), " \t\n\r")
+	timeString := "[" + time.Now().Format("2006-01-02 15:04:05") + "]"
+	header := "\033[31m" + timeString + " [ERROR]" + "\033[0m"
+	fmt.Println(header, message)
+}
+
+type Broadcastable interface {
+	Broadcast(JSON []byte)
+}
 
 type Logger struct {
 	dirPath        string
 	name           string
 	timeRecorded   bool
 	errorSeperated bool
-	udsServer      *uds.UDSServer
+	udsServer      Broadcastable
 }
 
 func GetMainLogger() (*Logger, error) {
@@ -40,7 +60,7 @@ func GetMainLogger() (*Logger, error) {
 	}, nil
 }
 
-func GetLogger(name string, timeRecorded bool, errorSeperated bool, udsServer *uds.UDSServer) (*Logger, error) {
+func GetLogger(name string, timeRecorded bool, errorSeperated bool, broadCastable Broadcastable) (*Logger, error) {
 	homeDir, err := util.GetHomeDirPath()
 	if err != nil {
 		return nil, err
@@ -59,18 +79,22 @@ func GetLogger(name string, timeRecorded bool, errorSeperated bool, udsServer *u
 		name,
 		timeRecorded,
 		errorSeperated,
-		udsServer,
+		broadCastable,
 	}, nil
 }
 
-func (this *Logger) SetUDSServer(udsServer *uds.UDSServer) {
+func (this *Logger) SetUDSServer(udsServer Broadcastable) {
 	this.udsServer = udsServer
 }
 
 func (this *Logger) Log(v ...any) {
-	message := fmt.Sprintln(v...)
-	if this.udsServer != nil {
-		this.udsServer.Broadcast(message)
-	}
+	message := strings.TrimRight(fmt.Sprintln(v...), " \t\n\r")
 	log.Println(message)
+
+	if this.udsServer != nil {
+		JSON, err := json.Marshal(message)
+		if err == nil {
+			this.udsServer.Broadcast(JSON)
+		}
+	}
 }

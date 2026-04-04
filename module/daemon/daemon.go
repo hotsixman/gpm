@@ -1,6 +1,7 @@
 package daemon
 
 import (
+	"gpm/module/database"
 	"gpm/module/logger"
 	"gpm/module/uds"
 	"os"
@@ -31,19 +32,48 @@ func DaemonInit() {
 		return
 	}
 
+	// main logger
 	log, err := logger.GetMainLogger()
 	if err != nil {
 		os.Exit(1)
 	}
 
-	udsServer, err := uds.Listen()
+	// db
+	db, err := database.OpenDB()
 	if err != nil {
-		log.Log(err)
+		log.Log("Cannot open db.")
+		os.Exit(1)
+	}
+	defer db.Close()
+
+	//
+	_, running, err := PIDManager.CheckPID()
+	if err != nil {
+		log.Log("Cannot check GPM daemon is running.")
+		os.Exit(1)
+	}
+	if running {
+		log.Log("GPM is already running.")
 		os.Exit(1)
 	}
 
+	//
+	err = PIDManager.RecordPid()
+	if err != nil {
+		log.Log("Cannot record pid.")
+		os.Exit(1)
+	}
+	defer PIDManager.DeletePid()
+
+	//
+	udsServer, err := uds.Listen()
+	if err != nil {
+		log.Log("Cannot listen uds server.")
+		os.Exit(1)
+	}
 	log.SetUDSServer(udsServer)
 
+	//
 	go func() {
 		for {
 			log.Log(time.Now())

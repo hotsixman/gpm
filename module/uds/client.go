@@ -2,9 +2,12 @@ package uds
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
+	"gpm/module/logger"
 	"log"
 	"net"
+	"strings"
 )
 
 type UDSClient struct {
@@ -31,7 +34,13 @@ func Connect() (*UDSClient, error) {
 				return
 			}
 
-			log.Println(message)
+			var data any
+			err = json.Unmarshal([]byte(strings.TrimSpace(message)), &data)
+			if err == nil {
+				logger.Logln(data)
+			} else {
+				logger.Errorln(message)
+			}
 		}
 	}()
 

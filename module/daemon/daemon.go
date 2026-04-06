@@ -5,7 +5,7 @@ import (
 	"gpm/module/database"
 	"gpm/module/logger"
 	"gpm/module/pm"
-	"gpm/module/uds"
+	"gpm/module/server"
 	"gpm/module/util"
 	"os"
 	"os/exec"
@@ -90,7 +90,7 @@ func DaemonInit() {
 	defer database.DB.Close()
 
 	// main logger
-	mainLog, err := logger.GetMainLogger()
+	mainLogger, err := logger.GetMainLogger()
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -99,37 +99,38 @@ func DaemonInit() {
 	// pid 체크
 	_, running, err := checkPid()
 	if err != nil {
-		mainLog.Logln(err)
+		mainLogger.Logln(err)
 		os.Exit(1)
 	}
 	if running {
-		mainLog.Logln("GPM is already running.")
+		mainLogger.Logln("GPM is already running.")
 		os.Exit(1)
 	}
 
 	// pid 저장
 	err = recordPid()
 	if err != nil {
-		mainLog.Logln("Cannot record pid.")
+		mainLogger.Logln("Cannot record pid.")
 		os.Exit(1)
 	}
 	defer deletePid()
 
 	// 서버 생성
-	udsServer, err := uds.Listen(mainLog)
+	udsServer, err := server.NewUDSServer()
 	if err != nil {
-		mainLog.Logln("Cannot listen uds server.")
+		mainLogger.Logln("Cannot listen uds server.")
 		os.Exit(1)
 	}
-	mainLog.SetServer(udsServer)
+	udsServer.SetLogger(mainLogger)
+	mainLogger.SetServer(udsServer)
 
 	// pm 생성
-	PM := pm.NewPM(mainLog)
+	PM := pm.NewPM(mainLogger)
 	PM.SetServer(udsServer)
 	udsServer.SetPM(PM)
 
 	// log
-	mainLog.Logln("GPM daemon started.")
+	mainLogger.Logln("GPM daemon started.")
 
 	select {}
 }

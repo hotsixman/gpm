@@ -1,18 +1,21 @@
 package pm
 
-import "gpm/module/types"
+import (
+	"gpm/module/types"
+)
 
-func (pm *PM) Stop(name string) error {
-	process := pm.process[name]
+func (pm *PM) Stop(message types.StopMessage) error {
+	process := pm.process[message.Name]
 	if process == nil {
-		return &types.NoProcessError{Name: name}
+		return &types.NoProcessError{Name: message.Name}
 	}
 	if process.status == "running" {
 		err := process.cmd.Process.Kill()
 		if err != nil {
+			pm.mainLogger.Logln("Cannot stop process: ", message.Name)
 			return err
 		}
 	}
-	delete(pm.process, name)
+	pm.mainLogger.Logln("Process stopped:", message.Name)
 	return nil
 }

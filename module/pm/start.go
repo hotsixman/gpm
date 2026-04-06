@@ -14,7 +14,11 @@ func (pm *PM) Start(startMessage types.StartMessage) error {
 	if formerProcess == nil {
 		return pm.NewProcess(startMessage)
 	} else if formerProcess.status == "stop" || formerProcess.status == "error" {
-		err := pm.Stop(startMessage.Name)
+		stopMessage := types.StopMessage{
+			Type: "stop",
+			Name: startMessage.Name,
+		}
+		err := pm.Stop(stopMessage)
 		if err != nil {
 			return err
 		}
@@ -66,7 +70,7 @@ func (pm *PM) NewProcess(startMessage types.StartMessage) error {
 
 	process := &PMProcess{
 		name:         startMessage.Name,
-		status:       "start",
+		status:       "running",
 		cmd:          cmd,
 		stdin:        stdin,
 		stdout:       stdout,

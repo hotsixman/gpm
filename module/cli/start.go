@@ -2,9 +2,9 @@ package cli
 
 import (
 	"fmt"
+	"gpm/module/client"
 	"gpm/module/logger"
 	"gpm/module/types"
-	"gpm/module/uds"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -52,7 +52,7 @@ var startCmd = &cobra.Command{
 			env = make(map[string]string)
 		}
 
-		message := types.StartMessage{
+		startMessage := types.StartMessage{
 			Type: "start",
 			Name: args[0],
 			Run:  run,
@@ -61,14 +61,20 @@ var startCmd = &cobra.Command{
 			Env:  env,
 		}
 
-		resultMessage, err := uds.Start(message)
+		conn, reader, err := client.MakeUDSConn()
+		if err != nil {
+			logger.Errorln(err)
+			os.Exit(1)
+		}
+
+		resultMessage, err := client.Start(conn, reader, startMessage)
 		if err != nil {
 			logger.Errorln(err)
 			os.Exit(1)
 		}
 
 		if resultMessage.Success {
-			logger.Logln(fmt.Sprintf("Successfully started process \"%s\".", message.Name))
+			logger.Logln(fmt.Sprintf("Successfully started process \"%s\".", startMessage.Name))
 			os.Exit(0)
 		} else {
 			logger.Errorln(resultMessage.Error)

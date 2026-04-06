@@ -13,3 +13,12 @@ func GetHomeDirPath() (string, error) {
 
 	return filepath.Join(dir, ".gpm"), nil
 }
+
+func GetUDSPath() string {
+	home, _ := os.UserHomeDir()
+	dir := filepath.Join(home, ".gpm")
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		os.MkdirAll(dir, 0755)
+	}
+	return filepath.Join(dir, "gpm.sock")
+}

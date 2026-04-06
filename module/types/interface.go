@@ -3,11 +3,14 @@ package types
 // PM
 type PMInterface interface {
 	Start(StartMessage) error
+	Stop(StopMessage) error
 	Input(name string, command string)
 }
 
 // Logger
 type LoggerInterface interface {
+	Logln(v ...any)
+	Errorln(v ...any)
 }
 
 // UDS

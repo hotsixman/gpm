@@ -1,15 +1,14 @@
-package uds
+package server
 
 import (
-	"encoding/json"
 	"gpm/module/types"
+	"gpm/module/util"
 	"net"
 
 	"github.com/mitchellh/mapstructure"
 )
 
-// Actions
-func (this *UDSServer) start(conn net.Conn, message map[string]any) {
+func (server *Server) start(conn net.Conn, message map[string]any) error {
 	var startMessage types.StartMessage
 	resultMessage := types.StartResultMessage{
 		Type:    "startResult",
@@ -19,30 +18,28 @@ func (this *UDSServer) start(conn net.Conn, message map[string]any) {
 
 	err := mapstructure.Decode(message, &startMessage)
 	if err != nil {
-		this.log.Errorln(err)
+		server.mainLogger.Errorln(err)
 		resultMessage.Error = err.Error()
-		JSON, err := json.Marshal(resultMessage)
+		err = util.SendMessage(conn, resultMessage)
 		if err != nil {
-			return
+			return err
 		}
-		conn.Write(append(JSON, '\n'))
 	}
 
-	err = this.pm.Start(startMessage)
+	err = server.pm.Start(startMessage)
 	if err != nil {
-		this.log.Errorln(err)
+		server.mainLogger.Errorln(err)
 		resultMessage.Error = err.Error()
-		JSON, err := json.Marshal(resultMessage)
+		err = util.SendMessage(conn, resultMessage)
 		if err != nil {
-			return
+			return err
 		}
-		conn.Write(append(JSON, '\n'))
 	}
 
 	resultMessage.Success = true
-	JSON, err := json.Marshal(resultMessage)
+	err = util.SendMessage(conn, resultMessage)
 	if err != nil {
-		return
+		return err
 	}
-	conn.Write(append(JSON, '\n'))
+	return nil
 }

@@ -2,8 +2,8 @@ package cli
 
 import (
 	"bufio"
+	"gpm/module/client"
 	"gpm/module/logger"
-	"gpm/module/uds"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -20,7 +20,13 @@ var connectCmd = &cobra.Command{
 		}
 
 		closeChan := make(chan bool)
-		client, err := uds.Connect(args[0], closeChan)
+		conn, reader, err := client.MakeUDSConn()
+		if err != nil {
+			logger.Errorln(err)
+			os.Exit(1)
+		}
+
+		client, err := client.NewClient(args[0], conn, reader, closeChan)
 		if err != nil {
 			logger.Errorln(err)
 			os.Exit(1)

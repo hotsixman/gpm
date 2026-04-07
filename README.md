@@ -26,7 +26,7 @@ geep init
 ### 2. 프로그램 실행하기 (`start`)
 관리할 프로그램을 등록하고 실행합니다. `--name`은 필수 옵션입니다.
 ```bash
-geep start --name [프로세스_이름] "[실행할_명령어]"
+geep start "[실행할_명령어]" --name [프로세스_이름] 
 ```
 *예시: node 서버 실행*
 ```bash

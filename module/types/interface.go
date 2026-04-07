@@ -4,7 +4,9 @@ package types
 type PMInterface interface {
 	Start(StartMessage) error
 	Stop(StopMessage) error
+	Delete(message DeleteMessage) error
 	Input(name string, command string)
+	List() []ListElement
 }
 
 // Logger

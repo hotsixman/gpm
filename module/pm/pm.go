@@ -6,10 +6,13 @@ import (
 	"io"
 	"os/exec"
 	"sync"
+
+	processUtil "github.com/shirou/gopsutil/v3/process"
 )
 
 type PM struct {
 	process      map[string]*PMProcess
+	processArr   []*PMProcess
 	mainLogger   *logger.Logger
 	server       types.ServerInterface
 	processMutex *sync.Mutex
@@ -27,6 +30,7 @@ type PMProcess struct {
 	stderr       io.ReadCloser
 	logger       *logger.Logger
 	startMessage types.StartMessage
+	util         *processUtil.Process
 }
 
 func NewPM(mainLogger *logger.Logger) *PM {

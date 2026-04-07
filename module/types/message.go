@@ -44,6 +44,39 @@ type StopResultMessage struct {
 	Error   string `json:"error"`
 }
 
+// Delete
+type DeleteMessage struct {
+	// "delete"
+	Type string `json:"type"`
+	Name string `json:"name"`
+}
+
+type DeleteResultMessage struct {
+	// "deleteResult"
+	Type    string `json:"type"`
+	Success bool   `json:"success"`
+	Error   string `json:"error"`
+}
+
+// List
+type ListMessage struct {
+	// "list"
+	Type string `json:"type"`
+}
+
+type ListResultMessage struct {
+	// "listResult"
+	Type string        `json:"type"`
+	List []ListElement `json:"list"`
+}
+
+type ListElement struct {
+	Name       string  `json:"name"`
+	Status     string  `json:"status"`
+	CPUPercent float64 `json:"cpuPercent"`
+	Mem        float64 `json:"mem"`
+}
+
 // log
 type LogMessage struct {
 	// "log" | "error"

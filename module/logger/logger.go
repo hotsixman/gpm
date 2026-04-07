@@ -163,7 +163,7 @@ func (this *Logger) Errorln(v ...any) {
 	header := "\033[31m" + timeString + " [Error]" + "\033[0m"
 
 	if this.errorFile != nil {
-		this.appendLog(header + " " + message)
+		this.appendError(header + " " + message)
 	}
 	if this.server != nil {
 		messageJSON := map[string]string{

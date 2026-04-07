@@ -102,6 +102,20 @@ func (server *Server) handleClient(conn net.Conn) error {
 				server.mainLogger.Errorln(err)
 			}
 		}
+	case "delete":
+		{
+			err := server.delete(conn, message)
+			if err != nil {
+				server.mainLogger.Errorln(err)
+			}
+		}
+	case "list":
+		{
+			err := server.list(conn, message)
+			if err != nil {
+				server.mainLogger.Errorln(err)
+			}
+		}
 	}
 
 	return nil

@@ -29,7 +29,7 @@ var listCmd = &cobra.Command{
 
 		// Define styles
 		re := lipgloss.NewRenderer(os.Stdout)
-		headerStyle := re.NewStyle().Foreground(lipgloss.Color("5")).Bold(true).Align(lipgloss.Center)
+		//headerStyle := re.NewStyle().Foreground(lipgloss.Color("5")).Bold(true).Align(lipgloss.Center)
 		cellStyle := re.NewStyle().Padding(0, 1)
 		borderStyle := re.NewStyle().Foreground(lipgloss.Color("240"))
 
@@ -52,9 +52,6 @@ var listCmd = &cobra.Command{
 			Headers("NAME", "STATUS", "RECOVERED", "CPU", "MEMORY").
 			Rows(rows...).
 			StyleFunc(func(row, col int) lipgloss.Style {
-				if row == 0 {
-					return headerStyle
-				}
 				return cellStyle
 			})
 

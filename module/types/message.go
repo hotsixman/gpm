@@ -95,6 +95,7 @@ type ListElement struct {
 	CPUPercent float64 `json:"cpuPercent"`
 	Mem        float64 `json:"mem"`
 	Recovered  int     `json:"recovered"`
+	Pid        string  `json:"pid"`
 }
 
 // kill all

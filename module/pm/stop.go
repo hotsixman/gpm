@@ -16,12 +16,12 @@ func (pm *PM) Stop(message types.StopMessage) error {
 		process.autoClean = false
 		err := process.cmd.Process.Kill()
 		if err != nil {
-			pm.mainLogger.Logln("Cannot stop process: ", message.Name)
+			pm.mainLogger.Logln("[Geep] Cannot stop process:", message.Name)
 			return err
 		}
 		process.status = "stop"
 		process.clean()
-		process.logger.Logln("Process stopped.")
+		process.logger.Logln("[Geep] Process stopped:", message.Name)
 		pm.mainLogger.Logln("Process stopped:", message.Name)
 	}
 	return nil

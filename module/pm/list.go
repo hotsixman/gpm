@@ -2,17 +2,24 @@ package pm
 
 import (
 	"geep/module/types"
+	"strconv"
 )
 
 func (pm *PM) List() []types.ListElement {
 	list := make([]types.ListElement, 0)
 	for _, process := range pm.processArr {
+		Pid := ""
+		if process.cmd != nil {
+			Pid = strconv.Itoa(process.cmd.Process.Pid)
+		}
+
 		elem := types.ListElement{
 			Name:       process.name,
 			Status:     string(process.status),
 			CPUPercent: 0,
 			Mem:        0,
 			Recovered:  process.recoveredCount,
+			Pid:        Pid,
 		}
 
 		if process.util != nil {

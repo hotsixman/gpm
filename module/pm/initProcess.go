@@ -75,7 +75,7 @@ func (pm *PM) initProcess(startMessage types.StartMessage, process *PMProcess) e
 		}
 		pm.process[startMessage.Name] = process
 		pm.processArr = append(pm.processArr, process)
-		process.logger.Logln("Process started.")
+		process.logger.Logln("[Geep] Process started.")
 	} else {
 		process.status = "running"
 		process.cmd = cmd
@@ -84,7 +84,7 @@ func (pm *PM) initProcess(startMessage types.StartMessage, process *PMProcess) e
 		process.stderr = stderr
 		process.util = util
 		process.autoClean = true
-		process.logger.Logln("Process restarted.")
+		process.logger.Logln("[Geep] Process restarted.")
 	}
 
 	go func() {
@@ -111,11 +111,11 @@ func (pm *PM) initProcess(startMessage types.StartMessage, process *PMProcess) e
 		pm.processMutex.Lock()
 		defer pm.processMutex.Unlock()
 		if err == nil || process.status == "stop" {
-			process.logger.Logln(fmt.Sprintf("Process exited. Error: %v", err))
+			process.logger.Logln(fmt.Sprintf("[Geep] Process exited. Error: %v", err))
 			process.status = "stop"
 
 		} else {
-			process.logger.Errorln(fmt.Sprintf("Process exited. Error: %v", err))
+			process.logger.Errorln(fmt.Sprintf("[Geep] Process exited. Error: %v", err))
 			process.status = "error"
 			if process.recoveredCount < process.startMessage.MaxRecoverCount {
 				process.recoveredCount++
@@ -127,7 +127,7 @@ func (pm *PM) initProcess(startMessage types.StartMessage, process *PMProcess) e
 
 		if recoverFlag {
 			pm.mainLogger.Errorln("Recovering process:", process.name)
-			process.logger.Errorln("Recovering process...")
+			process.logger.Errorln("[Geep] Recovering process:", process.name)
 			go pm.initProcess(startMessage, process)
 		}
 	}()

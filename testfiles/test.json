@@ -1,0 +1,5 @@
+{
+    "name": "test3",
+    "run": "bun",
+    "args": ["testfiles/test3.ts"]
+}

@@ -1,6 +1,8 @@
 package types
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Server
 type InvalidMessage struct {
@@ -49,4 +51,30 @@ type ProcessNotRunningError struct {
 
 func (this ProcessNotRunningError) Error() string {
 	return fmt.Sprintf("Process \"%s\" is not running.", this.Name)
+}
+
+// cli/startfrom
+
+type NoNameError struct {
+	JsonPath string
+}
+
+func (this NoNameError) Error() string {
+	return fmt.Sprintf("No 'name' key in %s", this.JsonPath)
+}
+
+type NoRunError struct {
+	JsonPath string
+}
+
+func (this NoRunError) Error() string {
+	return fmt.Sprintf("No 'run' key in %s", this.JsonPath)
+}
+
+type InvalidArgsError struct {
+	JsonPath string
+}
+
+func (this InvalidArgsError) Error() string {
+	return fmt.Sprintf("'args' member is invalid in %s", this.JsonPath)
 }

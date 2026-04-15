@@ -57,6 +57,12 @@ var startfromCommand = &cobra.Command{
 		} else {
 			startMessage.Env = data.Env
 		}
+		if data.Cwd == nil {
+			wd, _ := os.Getwd()
+			startMessage.Cwd = wd
+		} else {
+			startMessage.Cwd = *data.Cwd
+		}
 		if data.MaxRecoverCount == nil {
 			startMessage.MaxRecoverCount = 10
 		} else {
